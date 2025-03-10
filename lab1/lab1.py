@@ -75,7 +75,7 @@ print("Total missing values left:", data.isnull().sum().sum())
 # %%
 # Plot SalePrice distribution
 plt.figure(figsize=(8, 5))
-sns.histplot(data['SalePrice'], kde=True, bins=30)
+sb.histplot(data['SalePrice'], kde=True, bins=30)
 plt.title("Distribution of SalePrice")
 plt.xlabel("SalePrice")
 plt.ylabel("Frequency")
