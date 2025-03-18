@@ -73,7 +73,6 @@ X.isnull().sum()
 # %%
 X['children'].fillna(1,inplace=True)
 
-
 # %% [markdown]
 # # Double Checking for null values
 
@@ -140,67 +139,60 @@ print("Accuracy with RFE-selected features:",
 # 
 
 # %% [markdown]
-# # Embedded Method: Random Forest Feature Importance
-# ## Train a Random Forest and retrieve feature importances
+# Embedded Methods<br>
+# Embedded methods perform feature selection as part of the model training process. In this study, we use LassoCV, which applies L1 regularization to shrink coefficients to zero for less important features.
 
 # %%
+from sklearn.linear_model import LassoCV
 
-rf = RandomForestClassifier(n_estimators=100, random_state=42)
-rf.fit(X_train, y_train)
+# Use LassoCV to perform embedded feature selection with cross-validation
+lasso = LassoCV(cv=5, random_state=42).fit(X_train, y_train)
 
-importances = rf.feature_importances_
-feature_importance_df = pd.DataFrame({
-    'feature': X_train.columns,
-    'importance': importances
-}).sort_values(by='importance', ascending=False)
+# Create a series with feature coefficients
+coef = pd.Series(lasso.coef_, index=X_train.columns)
 
-print("Feature Importances (Random Forest):")
-display(feature_importance_df)
+# Select features with non-zero coefficients
+selected_features_lasso = coef[coef != 0].index
+print("Selected features (LassoCV):", list(selected_features_lasso))
 
-# Let's select top N features based on importance
-N = 5
-top_features_embedded = feature_importance_df.head(N)['feature'].values
-print(f"Top {N} features (Embedded - Random Forest):", top_features_embedded)
+# %% [markdown]
+# Visualizing the Lasso coefficients can help interpret the relative importance of each feature.
 
-# Evaluate performance using only these top features
-X_train_emb = X_train[top_features_embedded]
-X_test_emb = X_test[top_features_embedded]
+# %%
+import matplotlib.pyplot as plt
 
-rf.fit(X_train_emb, y_train)
-y_pred_emb = rf.predict(X_test_emb)
-print("Accuracy with Embedded-selected features:",
-      accuracy_score(y_test, y_pred_emb))
+# Plot the coefficients from the Lasso model
+plt.figure(figsize=(10, 5))
+coef.plot(kind='bar')
+plt.title("Lasso Coefficients")
+plt.xlabel("Features")
+plt.ylabel("Coefficient Value")
+plt.tight_layout()
+plt.show()
 
 
 # %% [markdown]
-# # **Observation**
+# Inferences<br>
+# Key Consistent Features:<br>
+# Across all methods, volatile acidity, chlorides, and sulphates are consistently selected. This reinforces their importance in determining wine quality.
 # 
-# - Random Forest classifier was trained on the training set, and its feature importances were computed.
-# - The features were ranked by importance, and the top 5 features were selected based on this ranking.
-# - The model was then re-trained using only these top 5 features, and the resulting accuracy on the test set was recorded.
-# - The accuracy obtained using this reduced feature set demonstrates that these features capture a substantial portion of the predictive information.
-
-# %% [markdown]
-# # **Inference**
+# Method-Specific Insights:<br>
 # 
-# - The embedded feature selection approach using Random Forest shows that a small subset of features can effectively predict the target variable.
-# - The top features identified by the model are considered the most influential in determining hotel booking cancellations.
-# - Reducing the feature set can lead to simpler, more interpretable models and may help in reducing overfitting.
-# - This technique not only improves computational efficiency but also provides valuable insights into the key factors affecting cancellation behavior.
-# 
+# Wrapper Methods: Provide a concise and highly interpretable feature set, which is advantageous when model simplicity is desired.<br>
+# RFE: Its divergence suggests sensitivity to the method of eliminating features based on coefficient stability.<br>
+# LassoCV: Offers a more nuanced view by retaining additional features with small but non-zero impacts, potentially leading to improved predictive performance when these subtle effects are valuable.<br>
+# Practical Implication:<br>
+# The choice of feature selection method should depend on your goals. If you aim for the most interpretable model with a minimal set of features, the consensus from the wrapper methods is compelling. If your priority is to capture all influential signals—even those with modest effects—an embedded method like LassoCV may be preferable.
 
 # %% [markdown]
 # # Conclusion
 # 
-# Both the wrapper method (RFE) and the embedded method (Random Forest feature importance) successfully identified a concise set of features that are key to predicting hotel booking cancellations. 
+# Both the wrapper method (RFE) and the embedded method successfully identified a concise set of features that are key to predicting hotel booking cancellations. 
 # 
 # - **Wrapper Approach (RFE):**  
 #   - Selected features primarily reflecting booking history and customer engagement.  
 #   - Achieved an accuracy of approximately 67.8%, indicating that these features are strong predictors.
 # 
-# - **Embedded Approach (Random Forest):**  
-#   - Identified the top 5 most influential features based on the model’s internal importance metrics.  
-#   - The reduced feature set maintained competitive predictive performance, demonstrating that much of the necessary information is captured by these features.
 # 
 # Overall, focusing on a reduced subset of features not only simplifies the model but also enhances interpretability and computational efficiency, making it a practical strategy for real-world applications. This approach underscores the importance of selecting quality features that directly contribute to model performance. 
 # 
