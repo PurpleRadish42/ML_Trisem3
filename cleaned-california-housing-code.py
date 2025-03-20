@@ -1,11 +1,3 @@
-# California Housing Price Prediction with Feature Selection
-
-## Introduction
-#This notebook analyzes the California Housing dataset and compares different feature selection methods for linear regression models. We'll explore forward selection, backward elimination, and stepwise selection to find the optimal subset of features.
-
-## Setup and Data Loading
-
-```python
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -40,22 +32,14 @@ print(df.head())
 
 print("\nSummary statistics:")
 print(df.describe())
-```
 
-## Exploratory Data Analysis
-
-```python
 # Exploratory Data Analysis
 plt.figure(figsize=(12, 10))
 sns.heatmap(df.corr(), annot=True, cmap='coolwarm', fmt='.2f')
 plt.title('Correlation Matrix of California Housing Features')
 plt.tight_layout()
 plt.show()  # Display directly in notebook instead of saving
-```
 
-## Data Preparation
-
-```python
 # Split data into features and target
 X = df.drop('PRICE', axis=1)
 y = df['PRICE']
@@ -67,11 +51,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
-```
 
-## Model Evaluation Function
-
-```python
 # Base model with all features
 def evaluate_model(X_train, X_test, y_train, y_test, feature_names, model_name="Model"):
     model = LinearRegression()
@@ -125,21 +105,13 @@ def evaluate_model(X_train, X_test, y_train, y_test, feature_names, model_name="
     }
     
     return result
-```
 
-## Baseline Model Evaluation
-
-```python
 # Evaluate base model with all features
 base_result = evaluate_model(
     X_train_scaled, X_test_scaled, y_train, y_test, 
     X.columns, "Base Model (All Features)"
 )
-```
 
-## Checking for Multicollinearity
-
-```python
 # Check for multicollinearity using VIF
 def calculate_vif(X):
     vif_data = pd.DataFrame()
@@ -150,13 +122,7 @@ def calculate_vif(X):
 print("\nVariance Inflation Factors (VIF) for feature multicollinearity:")
 vif_df = calculate_vif(X_train)
 print(vif_df)
-```
 
-## Feature Selection Methods
-
-### Forward Selection
-
-```python
 def forward_selection(X, y, significance_level=0.05):
     initial_features = []
     remaining_features = list(X.columns)
@@ -217,11 +183,7 @@ def forward_selection(X, y, significance_level=0.05):
 print("\n=== Forward Selection ===")
 forward_features, forward_history = forward_selection(X_train, y_train)
 print("\nSelected features:", forward_features)
-```
 
-### Backward Elimination
-
-```python
 def backward_elimination(X, y, significance_level=0.05):
     selected_features = list(X.columns)
     history = []
@@ -259,11 +221,7 @@ def backward_elimination(X, y, significance_level=0.05):
 print("\n=== Backward Elimination ===")
 backward_features, backward_history = backward_elimination(X_train, y_train)
 print("\nSelected features:", backward_features)
-```
 
-### Stepwise Selection
-
-```python
 def stepwise_selection(X, y, significance_level=0.05):
     initial_features = []
     remaining_features = list(X.columns)
@@ -356,11 +314,7 @@ def stepwise_selection(X, y, significance_level=0.05):
 print("\n=== Stepwise Selection ===")
 stepwise_features, stepwise_history = stepwise_selection(X_train, y_train)
 print("\nSelected features:", stepwise_features)
-```
 
-## Evaluating Feature Selection Methods
-
-```python
 # Evaluate Forward Selection model
 forward_X_train = X_train[forward_features]
 forward_X_test = X_test[forward_features]
@@ -399,11 +353,7 @@ stepwise_result = evaluate_model(
     stepwise_X_train_scaled, stepwise_X_test_scaled, y_train, y_test, 
     stepwise_features, "Stepwise Selection Model"
 )
-```
 
-## Model Comparison
-
-```python
 # Compare all models
 models_comparison = pd.DataFrame({
     'Model': ['Base Model (All Features)', 'Forward Selection', 'Backward Elimination', 'Stepwise Selection'],
@@ -421,11 +371,7 @@ models_comparison = pd.DataFrame({
 
 print("\n=== Model Comparison ===")
 print(models_comparison)
-```
 
-## Visualizing Model Comparisons
-
-```python
 # Visualize model comparison
 plt.figure(figsize=(14, 10))
 
@@ -459,11 +405,7 @@ plt.xticks(rotation=45, ha='right')
 
 plt.tight_layout()
 plt.show()  # Display directly in notebook instead of saving
-```
 
-## Visualizing Selection Method Progression
-
-```python
 # Plot the progression of Adjusted R² during selection methods
 plt.figure(figsize=(12, 6))
 
@@ -490,11 +432,7 @@ plt.grid(True, linestyle='--', alpha=0.7)
 plt.legend()
 plt.tight_layout()
 plt.show()  # Display directly in notebook instead of saving
-```
 
-## Identifying the Best Model
-
-```python
 # Final model selection based on Adjusted R² and RMSE
 best_model_idx = models_comparison['Test Adjusted R²'].idxmax()
 best_model_name = models_comparison.loc[best_model_idx, 'Model']
@@ -512,22 +450,14 @@ else:
 
 print("\nBest model's features and coefficients:")
 print(best_result['coefficients'])
-```
 
-## Conclusion
-
-```python
 # Conclusion
 print("\n=== Conclusion ===")
 print(f"The {best_model_name} performed best with an Adjusted R² of {models_comparison.loc[best_model_idx, 'Test Adjusted R²']:.4f}")
 print(f"Features selected: {', '.join(best_result['feature_names'])}")
 print(f"This represents a {100 * (1 - len(best_result['feature_names']) / len(base_result['feature_names'])):.1f}% reduction in features compared to the base model")
 print(f"The model had a Test RMSE of {models_comparison.loc[best_model_idx, 'Test RMSE']:.4f}")
-```
 
-## Visualizing Model Performance
-
-```python
 # Plot actual vs predicted for the best model
 if best_model_name == 'Forward Selection':
     best_X_test_scaled = forward_X_test_scaled
@@ -550,4 +480,3 @@ plt.title(f'Actual vs. Predicted House Prices using {best_model_name}')
 plt.grid(True, linestyle='--', alpha=0.7)
 plt.tight_layout()
 plt.show()  # Display directly in notebook instead of saving
-```
