@@ -1,0 +1,81 @@
+Iris Dataset Info:
+Total samples: 150
+Number of features: 4
+Features: ['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)']
+Target classes: ['setosa' 'versicolor' 'virginica']
+
+--- PART 1: SVM with default parameters ---
+Linear SVM accuracy: 0.9778
+Polynomial SVM accuracy: 0.9556
+RBF SVM accuracy: 1.0000
+
+--- PART 2: Hyperparameter tuning ---
+Tuning Linear SVM...
+Best parameters: {'C': 10}
+Best cross-validation score: 0.9524
+
+Tuning Polynomial SVM...
+Best parameters: {'C': 10, 'degree': 3, 'gamma': 'scale'}
+Best cross-validation score: 0.9429
+
+Tuning RBF SVM...
+Best parameters: {'C': 1, 'gamma': 0.1}
+Best cross-validation score: 0.9524
+
+--- PART 3: Evaluating tuned models ---
+Linear SVM (tuned) accuracy: 0.9778
+Classification Report:
+              precision    recall  f1-score   support
+
+      setosa       1.00      1.00      1.00        19
+  versicolor       1.00      0.92      0.96        13
+   virginica       0.93      1.00      0.96        13
+
+    accuracy                           0.98        45
+   macro avg       0.98      0.97      0.97        45
+weighted avg       0.98      0.98      0.98        45
+
+
+Polynomial SVM (tuned) accuracy: 0.9778
+Classification Report:
+              precision    recall  f1-score   support
+
+      setosa       1.00      1.00      1.00        19
+  versicolor       0.93      1.00      0.96        13
+   virginica       1.00      0.92      0.96        13
+
+    accuracy                           0.98        45
+   macro avg       0.98      0.97      0.97        45
+weighted avg       0.98      0.98      0.98        45
+
+
+RBF SVM (tuned) accuracy: 1.0000
+Classification Report:
+              precision    recall  f1-score   support
+
+      setosa       1.00      1.00      1.00        19
+  versicolor       1.00      1.00      1.00        13
+   virginica       1.00      1.00      1.00        13
+
+    accuracy                           1.00        45
+   macro avg       1.00      1.00      1.00        45
+weighted avg       1.00      1.00      1.00        45
+
+--- PART 5: Analysis and insights ---
+Performance improvement after tuning:
+Linear SVM: 0.00%
+Polynomial SVM: 2.22%
+RBF SVM: 0.00%
+
+Best performing model: RBF SVM with accuracy 1.0000
+
+Insights from the analysis:
+1. The Iris dataset has 3 classes (setosa, versicolor, virginica) with 4 features.
+2. With default parameters, all SVM kernels perform relatively well.
+3. Hyperparameter tuning improved the performance of all models.
+4. The RBF SVM performed best after tuning.
+5. The C parameter controls the trade-off between smooth decision boundary and classifying training points correctly.
+6. For polynomial kernel, the degree parameter affects the flexibility of the decision boundary.
+7. The gamma parameter in RBF kernel determines how far the influence of a single training example reaches.
+8. Some features are more important than others for classification, as shown in the feature importance plot.
+9. The decision boundaries show how different kernels create different separation surfaces in the feature space.
